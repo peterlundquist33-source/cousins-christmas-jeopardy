@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Cousins Christmas Jeopardy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pine:#0b3d2e;--pine-dark:#062720;--gold:#c9a24b;--gold-soft:#e4cf96;
+    --cranberry:#7a1f2b;--ivory:#faf6ee;--ink:#242019;--line:#e6dcc4;--muted:#78715f;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ivory);color:var(--ink);
+    font:16px/1.5 'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  h1,h2{font-family:'Cormorant Garamond',Georgia,serif}
+
+  header.top{background:linear-gradient(175deg,var(--pine),var(--pine-dark));color:#fff;
+    padding:30px 20px 24px;text-align:center}
+  header.top h1{margin:0;font-weight:700;font-size:34px;letter-spacing:1px;
+    text-transform:uppercase;color:#fdf3df}
+  header.top .rule{width:100px;height:1px;background:var(--gold);margin:12px auto;opacity:.8}
+  header.top p{margin:0;color:var(--gold-soft);font-size:15px;font-style:italic;
+    font-family:'Cormorant Garamond',Georgia,serif}
+  header.top a.back{position:absolute;left:20px;top:22px;color:var(--gold-soft);
+    font-size:13px;text-decoration:none;font-family:'Inter',sans-serif}
+
+  main{max-width:1000px;margin:0 auto;padding:22px 14px 50px}
+
+  #scoreboard{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:22px}
+  .team{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 14px;
+    display:flex;align-items:center;gap:10px;min-width:150px}
+  .team .name{font-weight:600;color:var(--pine-dark);flex:1}
+  .team .name[contenteditable]{outline:none;border-bottom:1px dashed var(--line)}
+  .team .score{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:22px;
+    color:var(--cranberry);min-width:50px;text-align:right}
+  .team button{border:1px solid var(--pine);background:var(--pine);color:#fff;border-radius:4px;
+    width:24px;height:24px;cursor:pointer;font-size:14px;line-height:1;padding:0}
+  .team button.minus{background:#fff;color:var(--cranberry);border-color:var(--cranberry)}
+  #controls{text-align:center;margin-bottom:22px}
+  #controls button{border:1px solid var(--pine);background:#fff;color:var(--pine);
+    border-radius:5px;padding:7px 16px;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;
+    margin:0 4px}
+  #controls button:hover{background:var(--pine);color:#fff}
+
+  #board{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+  .cat-head{background:var(--pine);color:#fdf3df;text-align:center;padding:10px 4px;
+    border-radius:4px;font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;
+    font-size:15px;letter-spacing:.3px;min-height:52px;display:flex;align-items:center;
+    justify-content:center;text-transform:uppercase}
+  .tile{background:#fff;border:1px solid var(--gold-soft);border-radius:4px;
+    aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;
+    font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:26px;
+    color:var(--gold);cursor:pointer;transition:background .15s}
+  .tile:hover{background:var(--ivory)}
+  .tile.used{background:var(--ivory);color:var(--line);cursor:default;pointer-events:none}
+
+  #overlay{position:fixed;inset:0;background:rgba(6,39,32,.88);display:none;
+    align-items:center;justify-content:center;z-index:50;padding:24px}
+  #overlay.show{display:flex}
+  #overlay .box{background:#fff;border-radius:8px;padding:36px 32px;max-width:560px;width:100%;
+    text-align:center;border:1px solid var(--gold-soft)}
+  #overlay .cat{color:var(--gold);font-size:13px;letter-spacing:1px;text-transform:uppercase;
+    font-family:'Inter',sans-serif;margin-bottom:10px}
+  #overlay .clue{font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:600;
+    color:var(--pine-dark);margin-bottom:18px}
+  #overlay .answer{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-style:italic;
+    color:var(--cranberry);min-height:30px;margin-bottom:20px}
+  #overlay button{border:1px solid var(--pine);background:var(--pine);color:#fff;border-radius:5px;
+    padding:9px 20px;font-size:13.5px;cursor:pointer;margin:0 5px;font-family:'Inter',sans-serif}
+  #overlay button.secondary{background:#fff;color:var(--pine)}
+
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:20px 0;
+    font-family:'Cormorant Garamond',Georgia,serif}
+  footer a{color:var(--pine)}
+
+  @media (max-width:720px){
+    #board{grid-template-columns:repeat(3,1fr);grid-auto-flow:column;grid-template-rows:auto repeat(5,1fr)}
+    .cat-head{font-size:12px;min-height:60px}
+    .tile{font-size:18px}
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="back" href="https://peterlundquist33-source.github.io/cousins-christmas/">&larr; Cousins Christmas</a>
+  <h1>Christmas Jeopardy</h1>
+  <div class="rule"></div>
+  <p>Cousins Christmas &middot; 2026</p>
+</header>
+<main>
+  <div id="scoreboard"></div>
+  <div id="controls">
+    <button id="add-team">+ Add Team</button>
+    <button id="reset-board">Reset Board</button>
+  </div>
+  <div id="board"></div>
+</main>
+<footer>Click a tile, read the clue, reveal the answer, then award points by hand.</footer>
+
+<div id="overlay"><div class="box">
+  <div class="cat" id="o-cat"></div>
+  <div class="clue" id="o-clue"></div>
+  <div class="answer" id="o-answer"></div>
+  <button id="o-reveal">Reveal Answer</button>
+  <button class="secondary" id="o-close">Close</button>
+</div></div>
+
+<script>
+  // Standard Jeopardy-style board: 6 categories x 5 clues, point values 100-500.
+  // Format: [clue text, answer in "What is..." / "Who is..." form].
+  const BOARD = [
+    { cat: 'Christmas Movies', clues: [
+      ['This 2003 Will Ferrell movie follows Buddy, a human raised by elves at the North Pole.', 'What is "Elf"?'],
+      ['In "Home Alone," the McCallisters accidentally fly off on their trip to this country without Kevin.', 'What is France?'],
+      ['This Jim Carrey movie villain tries to steal Christmas from the Whos down in Whoville.', 'Who is the Grinch?'],
+      ['In "National Lampoon’s Christmas Vacation," Clark Griswold’s uninvited houseguest who shows up in an RV.', 'Who is Cousin Eddie?'],
+      ['This 1946 Jimmy Stewart classic follows George Bailey and his guardian angel, Clarence.', 'What is "It’s a Wonderful Life"?']
+    ]},
+    { cat: 'Carols & Songs', clues: [
+      ['This carol begins, "Silent night, holy night, all is calm, all is bright."', 'What is "Silent Night"?'],
+      ['Mariah Carey’s massive holiday hit, released in 1994.', 'What is "All I Want for Christmas Is You"?'],
+      ['This carol lists a new gift for each of twelve days, starting with "a partridge in a pear tree."', 'What is "The Twelve Days of Christmas"?'],
+      ['Written by Mel Tormé, this song describes "chestnuts roasting on an open fire."', 'What is "The Christmas Song"?'],
+      ['This carol opens, "Said the night wind to the little lamb, do you see what I see?"', 'What is "Do You Hear What I Hear"?']
+    ]},
+    { cat: 'Santa & Reindeer', clues: [
+      ['This is the traditional name for Santa’s wife.', 'Who is Mrs. Claus?'],
+      ['This reindeer is famous for a shiny, glowing red nose.', 'Who is Rudolph?'],
+      ['This is the number of reindeer that traditionally pull Santa’s sleigh, not counting Rudolph.', 'What is eight?'],
+      ['Santa is traditionally said to live and run his workshop at this location.', 'What is the North Pole?'],
+      ['In "A Visit from St. Nicholas," this reindeer’s name means "thunder."', 'Who is Donner?']
+    ]},
+    { cat: 'Christmas Around the World', clues: [
+      ['In this country, it’s become a beloved tradition to eat KFC fried chicken on Christmas Day.', 'What is Japan?'],
+      ['This Nordic country’s Lapland region, home to Rovaniemi, markets itself as Santa’s official home.', 'What is Finland?'],
+      ['In Mexico, this nightly procession in the nine days before Christmas reenacts Mary and Joseph’s search for shelter.', 'What is Las Posadas?'],
+      ['In this Scandinavian country, families open presents on Christmas Eve and celebrate St. Lucia Day on December 13th.', 'What is Sweden?'],
+      ['In Catalonia, Spain, children beat this hollow log character with sticks to make it "poop" out small gifts.', 'What is the Caga Tió?']
+    ]},
+    { cat: 'History & Traditions', clues: [
+      ['The tradition of decorating an evergreen tree indoors is often credited to this country, starting in the 1500s.', 'What is Germany?'],
+      ['This 1823 poem, written by Clement Clarke Moore, is also known as "The Night Before Christmas."', 'What is "A Visit from St. Nicholas"?'],
+      ['The modern image of Santa in a red suit was popularized in the 1930s by ads for this soft drink company.', 'What is Coca-Cola?'],
+      ['Considered sacred by ancient Druids, this plant is associated with stealing a kiss at Christmastime.', 'What is mistletoe?'],
+      ['Christmas celebrations were actually outlawed for a time by this religious group, including in colonial New England.', 'Who are the Puritans?']
+    ]},
+    { cat: 'Holiday Pop Culture', clues: [
+      ['This red-and-white striped, peppermint-flavored treat is a holiday staple.', 'What is a candy cane?'],
+      ['In this popular holiday tradition, a toy elf "reports back to Santa" each night before moving to a new spot.', 'What is Elf on the Shelf?'],
+      ['This NYC landmark hosts a famous, nationally televised Christmas tree lighting every year.', 'What is Rockefeller Center?'],
+      ['In this classic holiday party game, players unwrap gifts and can "steal" ones already opened.', 'What is White Elephant (or a Yankee Swap)?'],
+      ['In Tchaikovsky’s "The Nutcracker," this is the Nutcracker Prince’s rival in battle.', 'Who is the Mouse King?']
+    ]}
+  ];
+  const VALUES = [100, 200, 300, 400, 500];
+
+  const boardEl = document.getElementById('board');
+  const usedKey = i => 'jeopardy-used-' + i;
+
+  function isUsed(ci, vi) {
+    return sessionStorage.getItem(usedKey(ci + '-' + vi)) === '1';
+  }
+  function markUsed(ci, vi) {
+    sessionStorage.setItem(usedKey(ci + '-' + vi), '1');
+  }
+  function clearUsed() {
+    BOARD.forEach((_, ci) => VALUES.forEach((_, vi) => sessionStorage.removeItem(usedKey(ci + '-' + vi))));
+  }
+
+  function renderBoard() {
+    let html = BOARD.map(c => `<div class="cat-head">${c.cat}</div>`).join('');
+    VALUES.forEach((val, vi) => {
+      BOARD.forEach((c, ci) => {
+        const used = isUsed(ci, vi);
+        html += `<div class="tile${used ? ' used' : ''}" data-ci="${ci}" data-vi="${vi}">${used ? '' : '$' + val}</div>`;
+      });
+    });
+    boardEl.innerHTML = html;
+  }
+
+  const overlay = document.getElementById('overlay');
+  const oCat = document.getElementById('o-cat');
+  const oClue = document.getElementById('o-clue');
+  const oAnswer = document.getElementById('o-answer');
+  const oReveal = document.getElementById('o-reveal');
+
+  let current = null;
+
+  function openClue(ci, vi) {
+    current = { ci, vi };
+    const cat = BOARD[ci];
+    const [clue, answer] = cat.clues[vi];
+    oCat.textContent = `${cat.cat} — $${VALUES[vi]}`;
+    oClue.textContent = clue;
+    oAnswer.textContent = '';
+    oAnswer.dataset.answer = answer;
+    oReveal.style.display = 'inline-block';
+    overlay.classList.add('show');
+  }
+
+  boardEl.addEventListener('click', e => {
+    const tile = e.target.closest('.tile');
+    if (!tile || tile.classList.contains('used')) return;
+    openClue(Number(tile.dataset.ci), Number(tile.dataset.vi));
+  });
+
+  oReveal.addEventListener('click', () => {
+    oAnswer.textContent = oAnswer.dataset.answer;
+    oReveal.style.display = 'none';
+  });
+
+  document.getElementById('o-close').addEventListener('click', () => {
+    if (current) {
+      markUsed(current.ci, current.vi);
+      renderBoard();
+    }
+    overlay.classList.remove('show');
+    current = null;
+  });
+
+  document.getElementById('reset-board').addEventListener('click', () => {
+    if (!confirm('Reset the whole board for a new game?')) return;
+    clearUsed();
+    renderBoard();
+  });
+
+  // ---- scoreboard: simple, local to this device/screen, resets with the board ----
+  const scoreboardEl = document.getElementById('scoreboard');
+  let teams = JSON.parse(sessionStorage.getItem('jeopardy-teams') || '[]');
+  if (!teams.length) teams = [{ name: 'Team 1', score: 0 }, { name: 'Team 2', score: 0 }];
+
+  function saveTeams() { sessionStorage.setItem('jeopardy-teams', JSON.stringify(teams)); }
+
+  function renderTeams() {
+    scoreboardEl.innerHTML = teams.map((t, i) => `
+      <div class="team" data-i="${i}">
+        <button class="minus" data-action="minus">−</button>
+        <span class="name" contenteditable="true" data-action="rename">${t.name}</span>
+        <span class="score">${t.score}</span>
+        <button data-action="plus">+</button>
+      </div>`).join('');
+  }
+
+  scoreboardEl.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const i = Number(btn.closest('.team').dataset.i);
+    if (btn.dataset.action === 'plus') teams[i].score += 100;
+    if (btn.dataset.action === 'minus') teams[i].score -= 100;
+    saveTeams();
+    renderTeams();
+  });
+  scoreboardEl.addEventListener('blur', e => {
+    const nameEl = e.target.closest('[data-action="rename"]');
+    if (!nameEl) return;
+    const i = Number(nameEl.closest('.team').dataset.i);
+    teams[i].name = nameEl.textContent.trim() || teams[i].name;
+    saveTeams();
+  }, true);
+
+  document.getElementById('add-team').addEventListener('click', () => {
+    teams.push({ name: 'Team ' + (teams.length + 1), score: 0 });
+    saveTeams();
+    renderTeams();
+  });
+
+  renderTeams();
+  renderBoard();
+</script>
+</body>
+</html>
